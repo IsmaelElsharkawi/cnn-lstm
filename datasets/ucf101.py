@@ -83,13 +83,16 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
                  sample_duration):
     data = load_annotation_data(annotation_path)
     video_names, annotations = get_video_names_and_annotations(data, subset)
+    #what is subset? refers to training or validation or testing
     class_to_idx = get_class_labels(data)
     idx_to_class = {}
     for name, label in class_to_idx.items():
         idx_to_class[label] = name
+    #suggestion: label is corresponding to class, for example, V and 0, ZN and 1
 
     dataset = []
     for i in range(len(video_names)):
+        #suggestion: video_names is the list of names of all videos in dataset
         if i % 1000 == 0:
             print('dataset loading [{}/{}]'.format(i, len(video_names)))
 
@@ -98,7 +101,9 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
             continue
 
         n_frames_file_path = os.path.join(video_path, 'n_frames')
+        #n_frames is the text file containing the number of frames per clip
         n_frames = int(load_value_file(n_frames_file_path))
+        #n_frames is the integer value of the number of frames per clip
         if n_frames <= 0:
             continue
 
@@ -109,6 +114,7 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
             'segment': [begin_t, end_t],
             'n_frames': n_frames,
             'video_id': video_names[i].split('/')[1]
+            #video_id is the video name without the complete path
         }
         if len(annotations) != 0:
             sample['label'] = class_to_idx[annotations[i]['label']]
@@ -117,12 +123,14 @@ def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
 
         if n_samples_for_each_video == 1:
             sample['frame_indices'] = list(range(1, n_frames + 1))
+            #creating the list of frames in a clip, for example, if a clip is 1 second length, the list will be {1, ....., 24}
             dataset.append(sample)
         else:
             if n_samples_for_each_video > 1:
                 step = max(1,
                            math.ceil((n_frames - 1 - sample_duration) /
                                      (n_samples_for_each_video - 1)))
+                #step represents the sample duration(the sample duration can have an alternative)
             else:
                 step = sample_duration
             for j in range(1, n_frames, step):
