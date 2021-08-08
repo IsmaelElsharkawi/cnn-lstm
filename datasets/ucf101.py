@@ -45,7 +45,8 @@ def video_loader(video_dir_path, frame_indices, image_loader):
 
     return video
 
-
+#functools.partial is used to make a partial function. A partial function is explained here https://www.geeksforgeeks.org/partial-functions-python/
+#it means that a new function is defined from the original function with a group of parameters being fixed in the inherited function. 
 def get_default_video_loader():
     image_loader = get_default_image_loader()
     return functools.partial(video_loader, image_loader=image_loader)
