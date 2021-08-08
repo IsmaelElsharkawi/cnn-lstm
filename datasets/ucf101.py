@@ -9,7 +9,7 @@ import copy
 
 from utils import load_value_file
 
-
+#to open an image as an rgb image
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
     with open(path, 'rb') as f:
@@ -33,7 +33,7 @@ def get_default_image_loader():
     else:
         return pil_loader
 
-
+#This array summarizes a clip into an array of frames that are really required according to the n_frames entailed by the terminal command
 def video_loader(video_dir_path, frame_indices, image_loader):
     video = []
     for i in frame_indices:
@@ -78,7 +78,14 @@ def get_video_names_and_annotations(data, subset):
 
     return video_names, annotations
 
-
+#This returns an array of dictionaries, where each dictionary contains:
+#video: path to video
+#segment: range of indices of frames in a clip 
+#n_frames: no of frames per clip
+#video_id: name of the clip without the whole path
+#label: 0 or 1 indicating the class
+#frame indices: array of indices in the clip that will be manipulated later
+# and another array containing each class label and the corresponding integer
 def make_dataset(root_path, annotation_path, subset, n_samples_for_each_video,
                  sample_duration):
     data = load_annotation_data(annotation_path)
